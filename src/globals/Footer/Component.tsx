@@ -1,6 +1,6 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import type { Footer } from '@/payload-types'
 
@@ -49,12 +49,13 @@ export async function Footer() {
         <Link className="flex items-center" href="/">
           <Logo />
         </Link>
-
-        <ContributionGraph
-          data={data}
-          year={year}
-          totalContributions={contributionData.totalContributions}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <ContributionGraph
+            data={data}
+            year={year}
+            totalContributions={contributionData.totalContributions}
+          />
+        </Suspense>
 
         <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
           <nav className="flex flex-col md:flex-row gap-4">
