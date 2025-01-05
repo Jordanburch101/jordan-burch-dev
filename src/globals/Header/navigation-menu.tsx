@@ -1,4 +1,5 @@
 'use client'
+
 import React from 'react'
 import Link from 'next/link'
 import {
@@ -12,73 +13,185 @@ import {
 } from '@/components/ui/navigation-menu'
 import { cn } from '@/utilities/cn'
 
-export function HeaderNav() {
+/**
+ * Navigation item link structure
+ * @property {('reference' | 'custom' | null)} [type] - Type of link (reference to internal page or custom URL)
+ * @property {string} label - Display text for the navigation item
+ * @property {boolean} [newTab] - Whether to open the link in a new tab
+ * @property {Object} [reference] - Reference to internal page/post
+ * @property {string} [url] - Custom URL for the link
+ */
+type NavItem = {
+  link: {
+    type?: 'reference' | 'custom' | null
+    label: string
+    newTab?: boolean | null
+    reference?: {
+      value: number | { id: string }
+      relationTo: 'pages' | 'posts'
+    } | null
+    url?: string
+  }
+  id?: string
+  subItems?: {
+    link: {
+      type?: 'reference' | 'custom' | null
+      label: string
+      newTab?: boolean | null
+      reference?: {
+        value: number | { id: string }
+        relationTo: 'pages' | 'posts'
+      } | null
+      url?: string
+    }
+    description?: string
+  }[]
+}
+
+type HeaderNavProps = {
+  navItems: NavItem[]
+}
+
+/**
+ * Resolves the URL for a navigation link based on its type
+ * @param link - Navigation link object
+ * @returns Resolved URL string
+ */
+const resolveLinkUrl = (link: NavItem['link']) => {
+  if (link.type === 'reference' && link.reference) {
+    const value =
+      typeof link.reference.value === 'object'
+        ? (link.reference.value as any).id
+        : link.reference.value
+    return `/${link.reference.relationTo}/${value}`
+  }
+  return link.url || '#'
+}
+
+/**
+ * HeaderNav Component
+ *
+ * Renders a navigation menu with support for dropdown menus and nested items.
+ * The first dropdown menu uses a special layout with a featured item,
+ * while subsequent dropdowns use a two-column grid layout.
+ *
+ * @component
+ * @param {Object} props
+ * @param {NavItem[]} props.navItems - Array of navigation items to display
+ *
+ * @example
+ * ```tsx
+ * const navItems = [
+ *   {
+ *     link: { label: 'Services', type: 'custom', url: '/services' },
+ *     subItems: [
+ *       { link: { label: 'Web Dev', url: '/services/web' }, description: 'Web development services' }
+ *     ]
+ *   }
+ * ]
+ *
+ * return <HeaderNav navItems={navItems} />
+ * ```
+ */
+export function HeaderNav({ navItems }: HeaderNavProps) {
   return (
     <NavigationMenu className="mx-6">
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Services</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <Link
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    href="/"
-                  >
-                    <div className="mb-2 mt-4 text-lg font-medium">Custom Development</div>
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Tailored solutions for your unique business needs.
-                    </p>
-                  </Link>
+        {navItems.map((item, index) => (
+          <NavigationMenuItem key={index}>
+            {item.subItems && item.subItems.length > 0 ? (
+              <>
+                <NavigationMenuTrigger>{item.link.label}</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  {index === 0 ? (
+                    // First dropdown uses a featured item layout with a large card on the left and list on the right
+                    <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                      {item.subItems.map((subItem, subIndex) =>
+                        subIndex === 0 ? (
+                          // Featured item with large text and gradient background
+                          <li key={subIndex} className="row-span-3">
+                            <NavigationMenuLink asChild>
+                              <Link
+                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                                href={resolveLinkUrl(subItem.link)}
+                                target={subItem.link.newTab ? '_blank' : undefined}
+                                rel={subItem.link.newTab ? 'noopener noreferrer' : undefined}
+                              >
+                                <div className="mb-2 mt-4 text-lg font-medium">
+                                  {subItem.link.label}
+                                </div>
+                                <p className="text-sm leading-tight text-muted-foreground">
+                                  {subItem.description}
+                                </p>
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        ) : (
+                          // Regular list items displayed on the right side
+                          <ListItem
+                            key={subIndex}
+                            href={resolveLinkUrl(subItem.link)}
+                            title={subItem.link.label}
+                            target={subItem.link.newTab ? '_blank' : undefined}
+                            rel={subItem.link.newTab ? 'noopener noreferrer' : undefined}
+                          >
+                            {subItem.description}
+                          </ListItem>
+                        ),
+                      )}
+                    </ul>
+                  ) : (
+                    // All other dropdowns use a simple two-column grid layout
+                    <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      {item.subItems.map((subItem, subIndex) => (
+                        <ListItem
+                          key={subIndex}
+                          href={resolveLinkUrl(subItem.link)}
+                          title={subItem.link.label}
+                          target={subItem.link.newTab ? '_blank' : undefined}
+                          rel={subItem.link.newTab ? 'noopener noreferrer' : undefined}
+                        >
+                          {subItem.description}
+                        </ListItem>
+                      ))}
+                    </ul>
+                  )}
+                </NavigationMenuContent>
+              </>
+            ) : (
+              // Simple link with hover effect for non-dropdown items
+              <Link
+                href={resolveLinkUrl(item.link)}
+                legacyBehavior
+                passHref
+                target={item.link.newTab ? '_blank' : undefined}
+                rel={item.link.newTab ? 'noopener noreferrer' : undefined}
+              >
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  {item.link.label}
                 </NavigationMenuLink>
-              </li>
-              <ListItem href="/services/web-development" title="Web Development">
-                Responsive and performant web applications
-              </ListItem>
-              <ListItem href="/services/mobile-apps" title="Mobile Apps">
-                Native and cross-platform mobile solutions
-              </ListItem>
-              <ListItem href="/services/consulting" title="Consulting">
-                Expert advice on your tech stack and architecture
-              </ListItem>
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Portfolio</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {portfolio.map((project) => (
-                <ListItem key={project.title} title={project.title} href={project.href}>
-                  {project.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/about" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>About</NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/blog" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Blog</NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Contact
-            </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+              </Link>
+            )}
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   )
 }
 
+/**
+ * ListItem Component
+ *
+ * A styled list item component for use in navigation dropdowns.
+ * Renders a link with a title and optional description.
+ *
+ * @component
+ * @param {Object} props
+ * @param {string} props.className - Additional CSS classes
+ * @param {string} props.title - Title of the list item
+ * @param {React.ReactNode} props.children - Description or additional content
+ * @param {React.Ref<HTMLAnchorElement>} ref - Forwarded ref for the anchor element
+ */
 const ListItem = React.forwardRef<React.ElementRef<'a'>, React.ComponentPropsWithoutRef<'a'>>(
   ({ className, title, children, ...props }, ref) => {
     return (
@@ -101,26 +214,3 @@ const ListItem = React.forwardRef<React.ElementRef<'a'>, React.ComponentPropsWit
   },
 )
 ListItem.displayName = 'ListItem'
-
-const portfolio = [
-  {
-    title: 'E-commerce Platform',
-    href: '/portfolio/e-commerce',
-    description: 'A scalable online store built with Next.js and Stripe',
-  },
-  {
-    title: 'Task Management App',
-    href: '/portfolio/task-management',
-    description: 'A productivity tool with real-time collaboration features',
-  },
-  {
-    title: 'Healthcare Portal',
-    href: '/portfolio/healthcare-portal',
-    description: 'A secure patient management system for clinics',
-  },
-  {
-    title: 'Social Media Dashboard',
-    href: '/portfolio/social-media-dashboard',
-    description: 'An analytics dashboard for social media marketers',
-  },
-]

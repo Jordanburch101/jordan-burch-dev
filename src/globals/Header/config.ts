@@ -1,5 +1,4 @@
 import type { GlobalConfig } from 'payload'
-
 import { link } from '@/fields/link'
 import { revalidateHeader } from './hooks/revalidateHeader'
 
@@ -16,6 +15,19 @@ export const Header: GlobalConfig = {
         link({
           appearances: false,
         }),
+        {
+          name: 'subItems',
+          type: 'array',
+          fields: [
+            link({
+              appearances: false,
+            }),
+            {
+              name: 'description',
+              type: 'textarea',
+            },
+          ],
+        },
       ],
       maxRows: 6,
       admin: {
