@@ -7,6 +7,14 @@ let cachedData: any = null
 let lastFetchTime: number = 0
 
 async function fetchGitHubContributions(username: string, year: number) {
+  // Return empty data if we're in a build environment
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'build') {
+    return {
+      totalContributions: 0,
+      weeks: [],
+    }
+  }
+
   // Add check for GitHub token
   if (!process.env.GITHUB_TOKEN) {
     console.warn('GITHUB_TOKEN is not set')
@@ -81,6 +89,14 @@ async function fetchGitHubContributions(username: string, year: number) {
 }
 
 export async function GET(request: Request) {
+  // Return empty data if we're in a build environment
+  if (process.env.NODE_ENV === 'production' && process.env.NEXT_PHASE === 'build') {
+    return NextResponse.json({
+      totalContributions: 0,
+      weeks: [],
+    })
+  }
+
   const { searchParams } = new URL(request.url)
   const username = searchParams.get('username')
   const year = parseInt(searchParams.get('year') || '2024', 10)
