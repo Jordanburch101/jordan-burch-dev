@@ -49,7 +49,8 @@ const config = {
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite'
+  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite',
+  			rainbow: 'rainbow var(--speed, 2s) infinite linear'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -92,7 +93,12 @@ const config = {
   			},
   			success: 'hsl(var(--success))',
   			error: 'hsl(var(--error))',
-  			warning: 'hsl(var(--warning))'
+  			warning: 'hsl(var(--warning))',
+  			'color-1': 'hsl(var(--color-1))',
+  			'color-2': 'hsl(var(--color-2))',
+  			'color-3': 'hsl(var(--color-3))',
+  			'color-4': 'hsl(var(--color-4))',
+  			'color-5': 'hsl(var(--color-5))'
   		},
   		fontFamily: {
   			mono: [
@@ -125,6 +131,14 @@ const config = {
   				},
   				'50%': {
   					transform: 'translate(-50%, -50%) scale(0.9)'
+  				}
+  			},
+  			rainbow: {
+  				'0%': {
+  					'background-position': '0%'
+  				},
+  				'100%': {
+  					'background-position': '200%'
   				}
   			}
   		},

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Logo } from './logo'
 import { HeaderNav } from './navigation-menu'
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { RainbowButton } from '@/components/ui/rainbow-button'
 
 interface HeaderData {
   navItems: {
@@ -29,7 +30,7 @@ export async function Header() {
         <Logo />
         <HeaderNav navItems={headerData.navItems || []} />
         <div className="ml-auto flex items-center space-x-4">
-          <Button>Get Started</Button>
+          <RainbowButton>Get Started</RainbowButton>
         </div>
       </div>
     </header>
