@@ -84,7 +84,7 @@ export interface UserAuthOperations {
 export interface Page {
   id: number;
   title: string;
-  layout: (ContentBlock | MediaBlock | ArchiveBlock | FormBlock | RippleBlock)[];
+  layout: (ContentBlock | MediaBlock | ArchiveBlock | FormBlock | RippleBlock | GravityBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -542,6 +542,16 @@ export interface RippleBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GravityBlock".
+ */
+export interface GravityBlock {
+  bodyType?: ('rectangle' | 'circle' | 'svg') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'gravityBlock';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -712,6 +722,7 @@ export interface PagesSelect<T extends boolean = true> {
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
         ripple?: T | RippleBlockSelect<T>;
+        gravityBlock?: T | GravityBlockSelect<T>;
       };
   meta?:
     | T
@@ -793,6 +804,15 @@ export interface FormBlockSelect<T extends boolean = true> {
  */
 export interface RippleBlockSelect<T extends boolean = true> {
   ripple?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "GravityBlock_select".
+ */
+export interface GravityBlockSelect<T extends boolean = true> {
+  bodyType?: T;
   id?: T;
   blockName?: T;
 }

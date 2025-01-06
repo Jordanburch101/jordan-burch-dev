@@ -8,12 +8,13 @@ import { ContentBlock } from '@/blocks/Content/Component'
 import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { RippleBlock } from './Ripple/Component'
-
+import { GravityBlock } from '@/blocks/GravityBlock/Component'
 const blockComponents = {
   archive: ArchiveBlock,
   content: ContentBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  gravityBlock: GravityBlock,
   ripple: RippleBlock,
 }
 
