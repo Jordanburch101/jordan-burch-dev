@@ -13,7 +13,9 @@ export function GitHubContributions({ username, year }: { username: string; year
         const response = await fetch(
           `/api/github-contributions?username=${username}&year=${year}`,
           {
-            cache: 'no-store',
+            next: {
+              revalidate: 43200, // 12 hours in seconds
+            },
           },
         )
         const contributionData = await response.json()

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 const GITHUB_API_URL = 'https://api.github.com/graphql'
-const CACHE_TIME = 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+const CACHE_TIME = 12 * 60 * 60 * 1000 // 12 hours in milliseconds
 
 let cachedData: any = null
 let lastFetchTime: number = 0
@@ -109,12 +109,22 @@ export async function GET(request: Request) {
 
   // Check if we have valid cached data
   if (cachedData && currentTime - lastFetchTime < CACHE_TIME) {
-    return NextResponse.json(cachedData)
+    return NextResponse.json(cachedData, {
+      headers: {
+        'Cache-Control': 'public, max-age=43200, s-maxage=43200', // 12 hours
+        'CDN-Cache-Control': 'public, max-age=43200, s-maxage=43200',
+      },
+    })
   }
 
   const contributionData = await fetchGitHubContributions(username, year)
   cachedData = contributionData
   lastFetchTime = currentTime
 
-  return NextResponse.json(contributionData)
+  return NextResponse.json(contributionData, {
+    headers: {
+      'Cache-Control': 'public, max-age=43200, s-maxage=43200', // 12 hours
+      'CDN-Cache-Control': 'public, max-age=43200, s-maxage=43200',
+    },
+  })
 }

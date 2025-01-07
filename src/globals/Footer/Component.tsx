@@ -1,6 +1,6 @@
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import Link from 'next/link'
-import React, { Suspense } from 'react'
+import React from 'react'
 import type { Footer } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { GitHubContributions } from '@/components/contribution-graph/GitHubContributions'
@@ -63,9 +63,7 @@ export async function Footer() {
           {/* Column 2 - GitHub Contributions */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold mb-4 text-gray-900">GitHub Activity</h3>
-            <Suspense fallback={<div className="text-gray-600">Loading contributions...</div>}>
-              <GitHubContributions username={username} year={year} />
-            </Suspense>
+            <GitHubContributions username={username} year={year} />
           </div>
         </div>
 

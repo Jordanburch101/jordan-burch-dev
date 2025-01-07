@@ -141,6 +141,10 @@ export const MatterBody = ({
 
   useEffect(() => {
     if (!elementRef.current || !context) return
+
+    // Start with opacity 0
+    elementRef.current.style.opacity = '0'
+
     context.registerElement(idRef.current, elementRef.current, {
       children,
       matterBodyOptions,
@@ -153,6 +157,14 @@ export const MatterBody = ({
       ...props,
     })
 
+    // Fade in after a brief delay to ensure physics body is ready
+    setTimeout(() => {
+      if (elementRef.current) {
+        elementRef.current.style.opacity = '1'
+        elementRef.current.style.transition = 'opacity 0.3s ease-in'
+      }
+    }, 100)
+
     return () => context.unregisterElement(idRef.current)
   }, [props, children, matterBodyOptions, isDraggable])
 
@@ -160,6 +172,7 @@ export const MatterBody = ({
     <div
       ref={elementRef}
       className={cn('absolute', className, isDraggable && 'pointer-events-none')}
+      style={{ opacity: 0 }} // Initial opacity
     >
       {children}
     </div>
@@ -257,6 +270,9 @@ const Gravity = forwardRef<GravityRef, GravityProps>(
         if (body) {
           World.add(engine.current.world, [body])
           bodiesMap.current.set(id, { element, body, props })
+
+          // Ensure opacity transition is smooth
+          element.style.transition = 'opacity 0.3s ease-in'
         }
       },
       [debug],
